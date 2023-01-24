@@ -52,6 +52,8 @@ Bootstrap breaks down into the following steps:
 - decide how many bootstrap samples to perform.
 - what is the sample size?
 - for each bootstrap sample:
+ - draw a sample with replacement with the chosen size
+ - calculate the statistic of interest for that sample 
 - calculate the mean of the calculated sample statistics.
 
 ---
@@ -59,31 +61,74 @@ Bootstrap breaks down into the following steps:
 
 
 ```r
+set.seed(123)
 n &lt;- 20
 s &lt;- rnorm(n = n,
            mean = 5.5,
            sd = 1.4)
-
-library(bootstrap)
-library(ggplot2)
 bp_s &lt;- bootstrap::bootstrap(s, 1000, var)
 str(bp_s)
 ```
 
----
+```
+## List of 5
+##  $ thetastar     : num [1:1000] 1.92 1.55 2.06 1.67 1.98 ...
+##  $ func.thetastar: NULL
+##  $ jack.boot.val : NULL
+##  $ jack.boot.se  : NULL
+##  $ call          : language bootstrap::bootstrap(x = s, nboot = 1000, theta = var)
+```
 
+---
+# Or we could write the bootstrap() manually
+
+.pull-left[
+
+```r
+B &lt;- matrix(0, nrow = 1000, 
+            ncol = n)
+
+for (i in 1: 1000){
+  B[i, ] &lt;- sample(s, size = n,
+                   replace = TRUE)
+}
+
+sd_b &lt;- apply(B, 1, sd)
+hist(sd_b)
+```
+]
+.pull-right[
+&lt;img src="week_17_files/figure-html/unnamed-chunk-2-1.png" width="504" /&gt;
+]
+---
 class: center, middle 
 
 Other Sampling Approaches 
 ---
 # Jackknife
 **It is a leave-one-out procedure.**
+It means:
+- We copy the existing sample *n* times, and each time, we delete one but different observation.
+- Then, we calculate the statistics of interests. 
 
 ---
-# K-cross Validation
+# Jackknife Illustration in R
 
 ---
-# Permutation 
+# *K*-cross Validation
+- **Divide the data into k parts and predict one left out segment based on a model of the remaining k − 1 segments;**
+- **Then assess distribution of prediction error.**
+
+![](kfold.png)
+
+---
+# Permutation Tests
+- To compare outcomes in experiments, we often do a two-sample t-test. 
+- It assumes that data are randomly selected from the population, arrived in large samples (&gt;30), or normally distributed with equal variances between groups.
+- But we could also o a permutation test,**without any distributional assumptions.**
+
+---
+# Permutation Tests in R
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
