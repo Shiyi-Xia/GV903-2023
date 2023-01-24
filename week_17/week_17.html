@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>Generliased Linear Model: Bootstrapping</title>
+    <title>Bootstrapping and Permutation Tests</title>
     <meta charset="utf-8" />
     <meta name="author" content="Winnie Xia" />
     <script src="libs/header-attrs/header-attrs.js"></script>
@@ -12,7 +12,7 @@
 class: center, middle, inverse, title-slide
 
 .title[
-# Generliased Linear Model: Bootstrapping
+# Bootstrapping and Permutation Tests
 ]
 .subtitle[
 ## Week 17
@@ -46,7 +46,7 @@ Bootstrap is a desirable approach when:
 - **the sample size is too small to draw a valid inference.**
 - **Reason**: it is a resampling method with replacement and recreates any number of resamples.
 ---
-# Let's breal down "bootstrap"
+# Let's break down "bootstrap"
 
 Bootstrap breaks down into the following steps:
 - decide how many bootstrap samples to perform.
@@ -61,7 +61,7 @@ Bootstrap breaks down into the following steps:
 
 
 ```r
-set.seed(123)
+set.seed(2021)
 n &lt;- 20
 s &lt;- rnorm(n = n,
            mean = 5.5,
@@ -72,13 +72,24 @@ str(bp_s)
 
 ```
 ## List of 5
-##  $ thetastar     : num [1:1000] 1.92 1.55 2.06 1.67 1.98 ...
+##  $ thetastar     : num [1:1000] 1.77 3 1.52 1.23 2.47 ...
 ##  $ func.thetastar: NULL
 ##  $ jack.boot.val : NULL
 ##  $ jack.boot.se  : NULL
 ##  $ call          : language bootstrap::bootstrap(x = s, nboot = 1000, theta = var)
 ```
+---
+# Bootstrapping Illustration in R
+The list item thetastar (a vector) contains each of the bootrap estimates of the statistic of interest (variance in the present example). It’s always good to plot a histogram of the bootstrap distribution.
 
+
+```r
+quickplot(bp_s$thetastar,
+          geom = "histogram",
+          bins = 25)
+```
+
+&lt;img src="week_17_files/figure-html/unnamed-chunk-2-1.png" width="504" /&gt;
 ---
 # Or we could write the bootstrap() manually
 
@@ -93,12 +104,12 @@ for (i in 1: 1000){
                    replace = TRUE)
 }
 
-sd_b &lt;- apply(B, 1, sd)
-hist(sd_b)
+sd_b &lt;- apply(B, 1, sd) # compute SD for each row
+hist(sd_b) # inspect the distribution of the SDs
 ```
 ]
 .pull-right[
-&lt;img src="week_17_files/figure-html/unnamed-chunk-2-1.png" width="504" /&gt;
+&lt;img src="week_17_files/figure-html/unnamed-chunk-3-1.png" width="504" /&gt;
 ]
 ---
 class: center, middle 
@@ -112,9 +123,6 @@ It means:
 - Then, we calculate the statistics of interests. 
 
 ---
-# Jackknife Illustration in R
-
----
 # *K*-cross Validation
 - **Divide the data into k parts and predict one left out segment based on a model of the remaining k − 1 segments;**
 - **Then assess distribution of prediction error.**
@@ -125,10 +133,95 @@ It means:
 # Permutation Tests
 - To compare outcomes in experiments, we often do a two-sample t-test. 
 - It assumes that data are randomly selected from the population, arrived in large samples (&gt;30), or normally distributed with equal variances between groups.
-- But we could also o a permutation test,**without any distributional assumptions.**
+- But we could also o a permutation test, **without any distributional assumptions.**
 
 ---
 # Permutation Tests in R
+
+```r
+set.seed(2021)
+dat &lt;- data.frame(group = c(rep("t", 10),
+                            rep("c", 10)),
+                  mark = c(rnorm(10, 69, 10),
+                           rnorm(10, 57, 10)))
+head(dat)
+```
+
+```
+##   group     mark
+## 1     t 67.77540
+## 2     t 74.52457
+## 3     t 72.48650
+## 4     t 72.59632
+## 5     t 77.98054
+## 6     t 49.77430
+```
+---
+# Permutation Test in R
+- First, we compute the difference in means.
+
+```r
+obs &lt;- mean(dat$mark[dat$group == "t"]) - 
+  mean(dat$mark[dat$group == "c"])
+obs
+```
+
+```
+## [1] 10.18717
+```
+
+- Then, we perform the *t* test.
+
+```r
+t.test(dat$mark[dat$group == "t"], dat$mark[dat$group == "c"])
+```
+
+```
+## 
+## 	Welch Two Sample t-test
+## 
+## data:  dat$mark[dat$group == "t"] and dat$mark[dat$group == "c"]
+## t = 2.0439, df = 16.694, p-value = 0.05708
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -0.3434257 20.7177593
+## sample estimates:
+## mean of x mean of y 
+##  72.03481  61.84764
+```
+
+---
+# Permutation Test in R
+.pull-left[
+
+```r
+d &lt;- numeric(1000)
+for (i in 1:1000){
+  dat2 &lt;- dat
+  dat$group &lt;- sample(dat2$group, 
+                      replace = FALSE)
+  d[i] &lt;- mean(dat$mark[dat$group == "t"]) - 
+  mean(dat$mark[dat$group == "c"])
+} 
+# Here, we re-assign groups labels randomly,
+# and then re-compute the difference in group 
+# means again;
+# we repeat these steps.
+# Eventually, this yields a distribution of differences.
+
+hist(d)
+abline(v = quantile(d, 0.95),
+       col = "blue",
+       lwd = 3)
+abline(v = obs,
+       col = "red",
+       lwd = 3)
+```
+]
+
+.pull-right[
+&lt;img src="week_17_files/figure-html/unnamed-chunk-7-1.png" width="504" /&gt;
+]
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

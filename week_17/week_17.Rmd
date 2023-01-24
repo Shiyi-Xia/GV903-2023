@@ -1,5 +1,5 @@
 ---
-title: "Generliased Linear Model: Bootstrapping"
+title: "Bootstrapping and Permutation Tests"
 subtitle: "Week 17"
 author: "Winnie Xia"
 output:
@@ -49,7 +49,7 @@ Bootstrap is a desirable approach when:
 - **the sample size is too small to draw a valid inference.**
 - **Reason**: it is a resampling method with replacement and recreates any number of resamples.
 ---
-# Let's breal down "bootstrap"
+# Let's break down "bootstrap"
 
 Bootstrap breaks down into the following steps:
 - decide how many bootstrap samples to perform.
@@ -63,7 +63,7 @@ Bootstrap breaks down into the following steps:
 # Bootstrapping Illustration in R
 
 ```{r tidy=FALSE}
-set.seed(123)
+set.seed(2021)
 n <- 20
 s <- rnorm(n = n,
            mean = 5.5,
@@ -71,7 +71,15 @@ s <- rnorm(n = n,
 bp_s <- bootstrap::bootstrap(s, 1000, var)
 str(bp_s)
 ```
+---
+# Bootstrapping Illustration in R
+The list item thetastar (a vector) contains each of the bootrap estimates of the statistic of interest (variance in the present example). It’s always good to plot a histogram of the bootstrap distribution.
 
+```{r tidy=FALSE, fig.height=4}
+quickplot(bp_s$thetastar,
+          geom = "histogram",
+          bins = 25)
+```
 ---
 # Or we could write the bootstrap() manually
 
@@ -85,8 +93,8 @@ for (i in 1: 1000){
                    replace = TRUE)
 }
 
-sd_b <- apply(B, 1, sd)
-hist(sd_b)
+sd_b <- apply(B, 1, sd) # compute SD for each row
+hist(sd_b) # inspect the distribution of the SDs
 ```
 ]
 .pull-right[
@@ -105,9 +113,6 @@ It means:
 - Then, we calculate the statistics of interests. 
 
 ---
-# Jackknife Illustration in R
-
----
 # *K*-cross Validation
 - **Divide the data into k parts and predict one left out segment based on a model of the remaining k − 1 segments;**
 - **Then assess distribution of prediction error.**
@@ -118,7 +123,61 @@ It means:
 # Permutation Tests
 - To compare outcomes in experiments, we often do a two-sample t-test. 
 - It assumes that data are randomly selected from the population, arrived in large samples (>30), or normally distributed with equal variances between groups.
-- But we could also o a permutation test,**without any distributional assumptions.**
+- But we could also o a permutation test, **without any distributional assumptions.**
 
 ---
 # Permutation Tests in R
+```{r}
+set.seed(2021)
+dat <- data.frame(group = c(rep("t", 10),
+                            rep("c", 10)),
+                  mark = c(rnorm(10, 69, 10),
+                           rnorm(10, 57, 10)))
+head(dat)
+```
+---
+# Permutation Test in R
+- First, we compute the difference in means.
+```{r}
+obs <- mean(dat$mark[dat$group == "t"]) - 
+  mean(dat$mark[dat$group == "c"])
+obs
+```
+
+- Then, we perform the *t* test.
+```{r}
+t.test(dat$mark[dat$group == "t"], dat$mark[dat$group == "c"])
+```
+
+---
+# Permutation Test in R
+.pull-left[
+```{r plot-a, fig.show = 'hide'}
+d <- numeric(1000)
+for (i in 1:1000){
+  dat2 <- dat
+  dat$group <- sample(dat2$group, 
+                      replace = FALSE)
+  d[i] <- mean(dat$mark[dat$group == "t"]) - 
+  mean(dat$mark[dat$group == "c"])
+} 
+# Here, we re-assign groups labels randomly,
+# and then re-compute the difference in group 
+# means again;
+# we repeat these steps.
+# Eventually, this yields a distribution of differences.
+
+hist(d)
+abline(v = quantile(d, 0.95),
+       col = "blue",
+       lwd = 3)
+abline(v = obs,
+       col = "red",
+       lwd = 3)
+```
+]
+
+.pull-right[
+```{r ref.label = 'plot-a', echo = FALSE}
+```
+]
