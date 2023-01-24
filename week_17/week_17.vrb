@@ -1,0 +1,3 @@
+\frametitle{Bootstrapping Illustration in \texttt{R}}
+We will try this with $n = 20$ for illustration. With larger samples, it will be asymptotically unbiased.
+

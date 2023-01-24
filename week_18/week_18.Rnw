@@ -1,0 +1,89 @@
+
+\documentclass{beamer} %[hyperref={pdfpagelabels=false}]
+\usetheme{metropolis} 
+\usepackage{bm}
+\usepackage{cmbright}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{dcolumn}
+\usepackage{booktabs}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{appendixnumberbeamer}
+\usepackage{colortbl}
+%\definecolor{lightgray}{rgb}{0.80,0.85,0.9}
+%\definecolor{gray}{RGB}{155,155,155}
+
+%\setbeameroption{hide notes}
+%\setbeamertemplate{note page}[plain]
+
+%\setbeamertemplate{footline}[frame number]
+%\setbeamertemplate{navigation symbols}{}
+
+\setbeamercolor{item}{fg=gray} % color of bullets
+\setbeamercolor{subitem}{fg=gray}
+\setbeamercolor{itemize/enumerate subbody}{fg=black}
+
+%\setbeamercolor{frametitle}{fg=black}
+%\setbeamercolor{frametitle}{bg=black!10!white}
+\setbeamerfont{frametitle}{size=\Large}
+
+\setbeamercolor*{title}{bg=white,fg=black}
+\setbeamercolor{alerted text}{fg=orange}
+\setbeamertemplate{blocks}[rounded][shadow=true]
+%\addtobeamertemplate{block begin}{\pgfsetfillopacity{0.8}}{\pgfsetfillopacity{1}}
+\setbeamercolor*{block title}{fg=white,bg=black!10!black}
+\setbeamercolor*{block body}{fg=black!90!black,bg=black!10!white}
+
+% reduce spacing between code chunk and printed console output
+\setlength{\OuterFrameSep}{2pt}
+\makeatletter
+\preto{\@verbatim}{\topsep=-8pt \partopsep=-8pt }
+\makeatother
+
+\title{Ordinal Dependent Variables}
+\author{Winnie Xia \\ \vspace{5mm} \scriptsize GV903: Advanced Research Methods, Week 17}
+%\date{\includegraphics[width=0.35\textwidth]{logo-essex.pdf}}
+
+
+\begin{document}
+
+\def\solutions{} %% set to true
+%\let\solutions\undefined %% set to false
+
+<<setup, include=FALSE, cache=FALSE>>=
+library("knitr")
+# set global chunk options
+opts_chunk$set(fig.path = 'figure/fig-', fig.align = 'center', fig.show = 'hold')
+options(formatR.arrow = TRUE, width = 66)
+knit_hooks$set(crop=hook_pdfcrop)
+library(fontawesome)
+@
+
+\begin{frame}[plain]
+\titlepage
+\end{frame}
+
+\begin{frame}
+\frametitle{What is Ordinal Data?}
+\begin{itemize}
+\item Survey respondents choose answers on scales from strongly agree to strongly disagree.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Again, why not linear model?}
+We will try this with $n = 20$ for illustration. With larger samples, it will be asymptotically unbiased.
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Ordianl Data in \texttt{R}}
+Let's create some data fro this experiment.
+
+\end{frame}
+
+
+\end{document}
