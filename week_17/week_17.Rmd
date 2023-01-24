@@ -1,0 +1,83 @@
+---
+title: "Generliased Linear Model: Bootstrapping"
+subtitle: "Week 17"
+author: "Winnie Xia"
+output:
+  xaringan::moon_reader:
+    css: xaringan-themer.css
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+style_mono_accent(
+  base_color = "#1c5253",
+  header_font_google = google_font("Josefin Sans"),
+  text_font_google   = google_font("Montserrat", "300", "300i"),
+  code_font_google   = google_font("Fira Mono")
+)
+```
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+class: inverse, center, middle
+
+# Get Started
+
+What is the difference between parametric or non-parametric?
+
+---
+# Bootstrap
+
+- **Definition**: It usually refers to a self-starting process that is to proceed withot external input.
+- Applied to statistics: We sample with replace from the sample
+---
+# Bootstrap
+Bootstrap is a desirable approach when:
+- **the distribution of a statistic is unknown or complicated**.
+- **Reason**: bootstrap is a non-parametric and does not ask foor specific distributions.
+- **the sample size is too small to draw a valid inference.**
+- **Reason**: it is a resampling method with replacement and recreates any number of resamples.
+---
+# Let's breal down "bootstrap"
+
+Bootstrap breaks down into the following steps:
+- decide how many bootstrap samples to perform.
+- what is the sample size?
+- for each bootstrap sample:
+- calculate the mean of the calculated sample statistics.
+
+---
+# Bootstrapping Illustration in R
+
+```{r eval=FALSE, tidy=FALSE}
+n <- 20
+s <- rnorm(n = n,
+           mean = 5.5,
+           sd = 1.4)
+
+library(bootstrap)
+library(ggplot2)
+bp_s <- bootstrap::bootstrap(s, 1000, var)
+str(bp_s)
+```
+
+---
+
+class: center, middle 
+
+Other Sampling Approaches 
+---
+# Jackknife
+**It is a leave-one-out procedure.**
+
+---
+# K-cross Validation
+
+---
+# Permutation 
