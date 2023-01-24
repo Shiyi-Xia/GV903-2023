@@ -10,3 +10,5 @@ Long, J. Scott 1997. Regression models for categorical and limited dependent var
 
 Ward, Michael D. and John S. Ahlquist. 2018. Maximum Likelihood for Social Science.
 
+Last updated: 24th, Jan, 2023
+
