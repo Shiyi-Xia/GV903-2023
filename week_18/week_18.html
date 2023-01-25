@@ -26,13 +26,76 @@ class: center, middle, inverse, title-slide
 
 
 
-
-class: center, middle
-
-# Ordinal Dependent Variables
-
+# What are ordinal dependent variables?
 
 ---
+# Ordered logit and probit regression
+
+---
+# Ordered logit and probit in R
+
+```r
+library(foreign)
+dat &lt;- read.dta("https://stats.idre.ucla.edu/stat/data/ologit.dta")
+head(dat)
+```
+
+```
+##             apply pared public  gpa
+## 1     very likely     0      0 3.26
+## 2 somewhat likely     1      0 3.21
+## 3        unlikely     1      1 3.94
+## 4 somewhat likely     0      0 2.81
+## 5 somewhat likely     0      0 2.53
+## 6        unlikely     0      1 2.59
+```
+---
+# Ordered logit and probit in R
+
+Below we use the `polr` function from the MASS package to estimate an ordered logistic regression model. 
+
+```r
+library(MASS) 
+library(texreg)
+m1 &lt;- polr(apply ~ pared + public + gpa, data = dat, 
+           method = "logistic", Hess=TRUE)
+
+m2 &lt;- polr(apply ~ pared + public + gpa, data = dat, 
+           method = "probit", Hess=TRUE)
+
+m3 &lt;- glm(as.numeric(apply) ~ pared + public + gpa,
+          data = dat)
+```
+---
+# Ordered logit and probit in R
+
+```
+## 
+## ==================================================================
+##                              Model 1      Model 2      Model 3    
+## ------------------------------------------------------------------
+## pared                           1.05 ***     0.60 ***     0.36 ***
+##                                (0.27)       (0.16)       (0.09)   
+## public                         -0.06         0.01         0.02    
+##                                (0.30)       (0.17)       (0.10)   
+## gpa                             0.62 *       0.36 *       0.19 *  
+##                                (0.26)       (0.16)       (0.09)   
+## unlikely|somewhat likely        2.20 **      1.30 **              
+##                                (0.78)       (0.47)                
+## somewhat likely|very likely     4.30 ***     2.50 ***             
+##                                (0.80)       (0.48)                
+## (Intercept)                                               0.91 ***
+##                                                          (0.25)   
+## ------------------------------------------------------------------
+## AIC                           727.02       727.50       798.34    
+## BIC                           746.98       747.45       818.29    
+## Log Likelihood               -358.51      -358.75      -394.17    
+## Deviance                      717.02       717.50       168.08    
+## Num. obs.                     400          400          400       
+## ==================================================================
+## *** p &lt; 0.001; ** p &lt; 0.01; * p &lt; 0.05
+```
+# Interpreting the odds ratio
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

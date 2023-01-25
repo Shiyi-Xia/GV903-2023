@@ -24,10 +24,38 @@ style_duo(primary_color = "#1F4257", secondary_color = "#F97B64")
 ```{r setup, include=FALSE}
 options(htmltools.dir.version = FALSE)
 ```
-
-class: center, middle
-
-# Ordinal Dependent Variables
-
+# What are ordinal dependent variables?
 
 ---
+# Ordered logit and probit regression
+
+---
+# Ordered logit and probit in R
+```{r}
+library(foreign)
+dat <- read.dta("https://stats.idre.ucla.edu/stat/data/ologit.dta")
+head(dat)
+```
+---
+# Ordered logit and probit in R
+
+Below we use the `polr` function from the MASS package to estimate an ordered logistic regression model. 
+```{r}
+library(MASS) 
+library(texreg)
+m1 <- polr(apply ~ pared + public + gpa, data = dat, 
+           method = "logistic", Hess=TRUE)
+
+m2 <- polr(apply ~ pared + public + gpa, data = dat, 
+           method = "probit", Hess=TRUE)
+
+m3 <- glm(as.numeric(apply) ~ pared + public + gpa,
+          data = dat)
+
+```
+---
+# Ordered logit and probit in R
+```{r , echo=FALSE}
+screenreg(list(m1, m2, m3))
+```
+# Interpreting the odds ratio
