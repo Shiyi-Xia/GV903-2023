@@ -39,13 +39,13 @@ What is the difference between parametric or non-parametric?
 ---
 # Bootstrap
 
-- **Definition**: It usually refers to a self-starting process that is to proceed withot external input.
+- **Definition**: It usually refers to a self-starting process that is to proceed without external input.
 - Applied to statistics: We sample with replace from the sample
 ---
 # Bootstrap
 Bootstrap is a desirable approach when:
 - **the distribution of a statistic is unknown or complicated**.
-- **Reason**: bootstrap is a non-parametric and does not ask foor specific distributions.
+- **Reason**: bootstrap is a non-parametric and does not ask for specific distributions.
 - **the sample size is too small to draw a valid inference.**
 - **Reason**: it is a resampling method with replacement and recreates any number of resamples.
 ---
