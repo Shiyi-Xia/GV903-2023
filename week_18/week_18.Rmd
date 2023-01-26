@@ -38,7 +38,6 @@ head(dat)
 ```
 ---
 # Ordered logit and probit in R
-
 Below we use the `polr` function from the MASS package to estimate an ordered logistic regression model. 
 ```{r}
 library(MASS) 
@@ -58,4 +57,20 @@ m3 <- glm(as.numeric(apply) ~ pared + public + gpa,
 ```{r , echo=FALSE}
 screenreg(list(m1, m2, m3))
 ```
-# Interpreting the odds ratio
+---
+# Interpretation
+
+```{r }
+summary(m1)
+```
+---
+# Interpretation
+We often interpret models by employing prediction based on scenarios.
+
+
+---
+# The Parallel Regression Assumption
+
+---
+- Assessing the parallel regression assumption
+
