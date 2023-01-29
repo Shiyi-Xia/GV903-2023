@@ -56,6 +56,18 @@ Below we use the `polr` function from the MASS package to estimate an ordered lo
 ```r
 library(MASS) 
 library(texreg)
+```
+
+```
+## Version:  1.38.6
+## Date:     2022-04-06
+## Author:   Philip Leifeld (University of Essex)
+## 
+## Consider submitting praise using the praise or praise_interactive functions.
+## Please cite the JSS article in your publications -- see citation("texreg").
+```
+
+```r
 m1 &lt;- polr(apply ~ pared + public + gpa, data = dat, 
            method = "logistic", Hess=TRUE)
 
@@ -126,11 +138,56 @@ summary(m1)
 We often interpret models by employing prediction based on scenarios.
 
 
+```r
+library(erer)
+ocME(m1)
+```
+
+```
+##        effect.unlikely effect.somewhat likely effect.very likely
+## pared           -0.255                  0.137              0.117
+## public           0.015                 -0.010             -0.005
+## gpa             -0.152                  0.101              0.051
+```
 ---
 # The Parallel Regression Assumption
 
+- An alternative way of conceptualizing the ordered logit/probit model is as the constrained estimation of a system of logit/probit models.
+
+- Parallel regressions describe how the impact of covariates may shift the predicted probability curves to the right ot left, but **does not change the basic slope of these curves across any two categories.**
 ---
-- Assessing the parallel regression assumption
+# Assessing the parallel regression assumption
+
+- Fit separate binary logit or probit models for the different cut-off levels and see if the slopes are similar.
+
+- The Brant test
+
+```r
+library(brant)
+brant(m1)
+```
+
+```
+## -------------------------------------------- 
+## Test for	X2	df	probability 
+## -------------------------------------------- 
+## Omnibus		4.34	3	0.23
+## pared		0.13	1	0.72
+## public		3.44	1	0.06
+## gpa		0.18	1	0.67
+## -------------------------------------------- 
+## 
+## H0: Parallel Regression Assumption holds
+```
+
+---
+# Cumulative Link Model
+
+```r
+library(ordinal)
+m4 &lt;- clm(apply ~ pared + public + gpa, data = dat, 
+           link = "logit")
+```
 
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>

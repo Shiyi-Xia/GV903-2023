@@ -21,7 +21,7 @@ style_mono_accent(
 style_duo(primary_color = "#1F4257", secondary_color = "#F97B64")
 ```
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, message=FALSE, warning=FALSE}
 options(htmltools.dir.version = FALSE)
 ```
 # What are ordinal dependent variables?
@@ -67,10 +67,33 @@ summary(m1)
 # Interpretation
 We often interpret models by employing prediction based on scenarios.
 
-
+```{r message=FALSE}
+library(erer)
+ocME(m1)
+```
 ---
 # The Parallel Regression Assumption
 
+- An alternative way of conceptualizing the ordered logit/probit model is as the constrained estimation of a system of logit/probit models.
+
+- Parallel regressions describe how the impact of covariates may shift the predicted probability curves to the right ot left, but **does not change the basic slope of these curves across any two categories.**
 ---
-- Assessing the parallel regression assumption
+# Assessing the parallel regression assumption
+
+- Fit separate binary logit or probit models for the different cut-off levels and see if the slopes are similar.
+
+- The Brant test
+```{r }
+library(brant)
+brant(m1)
+```
+
+---
+# Cumulative Link Model
+```{r}
+library(ordinal)
+m4 <- clm(apply ~ pared + public + gpa, data = dat, 
+           link = "logit")
+
+```
 
