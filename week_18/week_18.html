@@ -137,14 +137,10 @@ marg
 ```
 
 ```
-##        effect.unlikely effect.somewhat likely
-## pared           -0.255                  0.137
-## public           0.015                 -0.010
-## gpa             -0.152                  0.101
-##        effect.very likely
-## pared               0.117
-## public             -0.005
-## gpa                 0.051
+##        effect.unlikely effect.somewhat likely effect.very likely
+## pared           -0.255                  0.137              0.117
+## public           0.015                 -0.010             -0.005
+## gpa             -0.152                  0.101              0.051
 ```
 ---
 # Interpretation
@@ -173,14 +169,10 @@ marg$out # get t and p-values
 ## gpa     0.051 0.022   2.301   0.022
 ## 
 ## $ME.all
-##        effect.unlikely effect.somewhat likely
-## pared           -0.255                  0.137
-## public           0.015                 -0.010
-## gpa             -0.152                  0.101
-##        effect.very likely
-## pared               0.117
-## public             -0.005
-## gpa                 0.051
+##        effect.unlikely effect.somewhat likely effect.very likely
+## pared           -0.255                  0.137              0.117
+## public           0.015                 -0.010             -0.005
+## gpa             -0.152                  0.101              0.051
 ```
 ---
 # The Parallel Regression Assumption
@@ -188,11 +180,11 @@ marg$out # get t and p-values
 
 - Parallel regressions describe how the impact of covariates may shift the predicted probability curves to the right ot left, but **does not change the basic slope of these curves across any two categories.**
 ---
-# Assessing the parallel regression assumption
+# Assessing the assumption
 
 - Fit separate binary logit or probit models for the different cut-off levels and see if the slopes are similar.
 
-- The Brant test
+- The Brant test: A p-value of less than 0.05 on this test should be interpreted as a failure of the proportional odds assumption.
 
 
 ```r
@@ -242,8 +234,7 @@ summary(m4)
 ## public -0.05868    0.29786  -0.197   0.8438    
 ## gpa     0.61575    0.26063   2.363   0.0182 *  
 ## ---
-## Signif. codes:  
-## 0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## Threshold coefficients:
 ##                             Estimate Std. Error z value

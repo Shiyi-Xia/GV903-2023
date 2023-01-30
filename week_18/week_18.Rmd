@@ -89,11 +89,11 @@ marg$out # get t and p-values
 
 - Parallel regressions describe how the impact of covariates may shift the predicted probability curves to the right ot left, but **does not change the basic slope of these curves across any two categories.**
 ---
-# Assessing the parallel regression assumption
+# Assessing the assumption
 
 - Fit separate binary logit or probit models for the different cut-off levels and see if the slopes are similar.
 
-- The Brant test
+- The Brant test: A p-value of less than 0.05 on this test should be interpreted as a failure of the proportional odds assumption.
 
 ```{r }
 library(brant)
