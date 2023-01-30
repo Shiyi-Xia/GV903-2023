@@ -21,13 +21,20 @@ style_mono_accent(
 style_duo(primary_color = "#1F4257", secondary_color = "#F97B64")
 ```
 
-```{r setup, include=FALSE, message=FALSE, warning=FALSE}
+```{r setup, include=FALSE}
 options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(fig.retina = 3, warning = FALSE, message = FALSE)
 ```
-# What are ordinal dependent variables?
 
----
 # Ordered logit and probit regression
+
+- If outcome or dependent variable is binary, then use **logit or probit models**.
+
+- If outcome or dependent variable is categorical but ordered (i.e low to high), then use **ordered logit or ordered probit models**
+ - Agree; Neutral; Disagree
+ - Low; Middle; High
+ 
+- If outcome or dependent variable is categorical without any particular order, then use **multinomial logit**.
 
 ---
 # Ordered logit and probit in R
@@ -39,7 +46,7 @@ head(dat)
 ---
 # Ordered logit and probit in R
 Below we use the `polr` function from the MASS package to estimate an ordered logistic regression model. 
-```{r}
+```{r, message=FALSE}
 library(MASS) 
 library(texreg)
 m1 <- polr(apply ~ pared + public + gpa, data = dat, 
@@ -59,21 +66,25 @@ screenreg(list(m1, m2, m3))
 ```
 ---
 # Interpretation
-
 ```{r }
 summary(m1)
 ```
 ---
 # Interpretation
-We often interpret models by employing prediction based on scenarios.
-
+We often interpret models by calculating marginal effects for an ordered choice model and their standard errors.
 ```{r message=FALSE}
 library(erer)
-ocME(m1)
+marg <- ocME(m1)
+marg
+```
+---
+# Interpretation
+```{r message=FALSE}
+marg$out # get t and p-values
+
 ```
 ---
 # The Parallel Regression Assumption
-
 - An alternative way of conceptualizing the ordered logit/probit model is as the constrained estimation of a system of logit/probit models.
 
 - Parallel regressions describe how the impact of covariates may shift the predicted probability curves to the right ot left, but **does not change the basic slope of these curves across any two categories.**
@@ -83,6 +94,7 @@ ocME(m1)
 - Fit separate binary logit or probit models for the different cut-off levels and see if the slopes are similar.
 
 - The Brant test
+
 ```{r }
 library(brant)
 brant(m1)
@@ -95,5 +107,11 @@ library(ordinal)
 m4 <- clm(apply ~ pared + public + gpa, data = dat, 
            link = "logit")
 
+```
+
+---
+# Cumulative Link Model
+```{r}
+summary(m4)
 ```
 

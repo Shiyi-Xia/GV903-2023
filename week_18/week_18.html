@@ -26,10 +26,16 @@ class: center, middle, inverse, title-slide
 
 
 
-# What are ordinal dependent variables?
 
----
 # Ordered logit and probit regression
+
+- If outcome or dependent variable is binary, then use **logit or probit models**.
+
+- If outcome or dependent variable is categorical but ordered (i.e low to high), then use **ordered logit or ordered probit models**
+ - Agree; Neutral; Disagree
+ - Low; Middle; High
+ 
+- If outcome or dependent variable is categorical without any particular order, then use **multinomial logit**.
 
 ---
 # Ordered logit and probit in R
@@ -56,18 +62,6 @@ Below we use the `polr` function from the MASS package to estimate an ordered lo
 ```r
 library(MASS) 
 library(texreg)
-```
-
-```
-## Version:  1.38.6
-## Date:     2022-04-06
-## Author:   Philip Leifeld (University of Essex)
-## 
-## Consider submitting praise using the praise or praise_interactive functions.
-## Please cite the JSS article in your publications -- see citation("texreg").
-```
-
-```r
 m1 &lt;- polr(apply ~ pared + public + gpa, data = dat, 
            method = "logistic", Hess=TRUE)
 
@@ -109,7 +103,6 @@ m3 &lt;- glm(as.numeric(apply) ~ pared + public + gpa,
 ---
 # Interpretation
 
-
 ```r
 summary(m1)
 ```
@@ -135,23 +128,62 @@ summary(m1)
 ```
 ---
 # Interpretation
-We often interpret models by employing prediction based on scenarios.
-
+We often interpret models by calculating marginal effects for an ordered choice model and their standard errors.
 
 ```r
 library(erer)
-ocME(m1)
+marg &lt;- ocME(m1)
+marg
 ```
 
 ```
-##        effect.unlikely effect.somewhat likely effect.very likely
-## pared           -0.255                  0.137              0.117
-## public           0.015                 -0.010             -0.005
-## gpa             -0.152                  0.101              0.051
+##        effect.unlikely effect.somewhat likely
+## pared           -0.255                  0.137
+## public           0.015                 -0.010
+## gpa             -0.152                  0.101
+##        effect.very likely
+## pared               0.117
+## public             -0.005
+## gpa                 0.051
+```
+---
+# Interpretation
+
+```r
+marg$out # get t and p-values
+```
+
+```
+## $ME.unlikely
+##        effect error t.value p.value
+## pared  -0.255 0.060  -4.237   0.000
+## public  0.015 0.073   0.198   0.843
+## gpa    -0.152 0.064  -2.364   0.019
+## 
+## $`ME.somewhat likely`
+##        effect error t.value p.value
+## pared   0.137 0.029   4.820   0.000
+## public -0.010 0.049  -0.196   0.844
+## gpa     0.101 0.044   2.305   0.022
+## 
+## $`ME.very likely`
+##        effect error t.value p.value
+## pared   0.117 0.039   3.025   0.003
+## public -0.005 0.024  -0.201   0.841
+## gpa     0.051 0.022   2.301   0.022
+## 
+## $ME.all
+##        effect.unlikely effect.somewhat likely
+## pared           -0.255                  0.137
+## public           0.015                 -0.010
+## gpa             -0.152                  0.101
+##        effect.very likely
+## pared               0.117
+## public             -0.005
+## gpa                 0.051
 ```
 ---
 # The Parallel Regression Assumption
-
 - An alternative way of conceptualizing the ordered logit/probit model is as the constrained estimation of a system of logit/probit models.
 
 - Parallel regressions describe how the impact of covariates may shift the predicted probability curves to the right ot left, but **does not change the basic slope of these curves across any two categories.**
@@ -161,6 +193,7 @@ ocME(m1)
 - Fit separate binary logit or probit models for the different cut-off levels and see if the slopes are similar.
 
 - The Brant test
+
 
 ```r
 library(brant)
@@ -187,6 +220,35 @@ brant(m1)
 library(ordinal)
 m4 &lt;- clm(apply ~ pared + public + gpa, data = dat, 
            link = "logit")
+```
+
+---
+# Cumulative Link Model
+
+```r
+summary(m4)
+```
+
+```
+## formula: apply ~ pared + public + gpa
+## data:    dat
+## 
+##  link  threshold nobs logLik  AIC    niter max.grad cond.H 
+##  logit flexible  400  -358.51 727.02 5(0)  1.63e-10 1.3e+03
+## 
+## Coefficients:
+##        Estimate Std. Error z value Pr(&gt;|z|)    
+## pared   1.04766    0.26579   3.942 8.09e-05 ***
+## public -0.05868    0.29786  -0.197   0.8438    
+## gpa     0.61575    0.26063   2.363   0.0182 *  
+## ---
+## Signif. codes:  
+## 0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Threshold coefficients:
+##                             Estimate Std. Error z value
+## unlikely|somewhat likely      2.2033     0.7795   2.826
+## somewhat likely|very likely   4.2988     0.8043   5.345
 ```
 
     </textarea>
