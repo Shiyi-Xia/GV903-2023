@@ -1,0 +1,113 @@
+---
+title: "Nominal Dependent Variables"
+subtitle: "Week 19"
+author: "Winnie Xia"
+output:
+  xaringan::moon_reader:
+    css: xaringan-themer.css
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+style_mono_accent(
+  header_font_google = google_font("Josefin Sans"),
+  text_font_google   = google_font("Montserrat", "300", "300i"),
+  code_font_google   = google_font("Fira Mono")
+)
+style_solarized_light()
+```
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(fig.retina = 3, warning = FALSE, message = FALSE)
+```
+
+# Nominal Data in Political Science
+
+- If outcome or dependent variable is binary, then use **logit or probit models**.
+
+- If outcome or dependent variable is categorical but ordered (i.e low to high), then use **ordered logit or ordered probit models**
+ - Agree; Neutral; Disagree
+ - Low; Middle; High
+ 
+- If outcome or dependent variable is categorical without any particular order, then use **multinomial logit/probit models**.
+
+---
+# Models for Nominal DVs
+- Multinominal logit model: Series of binary logit models; similar to ordered logit. **Easiest to interpret**.
+- Multinominal probit model: Series of binary probit models; similar to ordered probit. **Drops the IIA assumption**.
+- Conditional logit model
+- Joint multinominal and conditional logit model
+- Mixed multinomial logit model
+- Nested multinomial logit model
+---
+# R packages for Nominal families 
+|  | nnet | mlogit | mnlogit | MNP |mclogit |
+|--------| --- | --- | --- | --- | --- |
+| Multinominal logit model | yes | yes | yes | no | yes |
+| Multinominal probit model | no | yes | no | yes | no |
+| Conditional logit model | no | yes| yes | no | yes |
+| Joint multinominal and conditional logit model | no | yes | no | no | yes |
+| Mixed multinomial logit model | no | yes | yes | no | no |
+| Mixed multinomial logit model | no | no | yes | no | no |
+
+---
+# Multinomial Logit Model in R
+
+```{r}
+library(foreign)
+library(texreg)
+library(carData)
+data(WVS)
+WVS$poverty <- as.factor(as.character(WVS$poverty))
+```
+
+---
+# Multinomial Logit Model in R
+
+```{r}
+library(nnet)
+m1 <- multinom(poverty ~ religion + degree + country + 
+                 age + gender, data = WVS)
+```
+---
+# Multinomial Logit Model in R
+
+```{r}
+screenreg(m1, single.row = TRUE, beside = TRUE)
+```
+
+---
+# Multinomial Logit Interpretation
+- Again, we recommend, to use **predicted probabilities**.
+- Create a typical scenario and then plot them.
+
+---
+# Interpretation
+```{r}
+z <- summary(m1)$coefficients/summary(m1)$standard.errors
+p <- (1 - pnorm(abs(z), 0, 1))*2
+p
+```
+---
+# Interpretation
+```{r}
+exp(coef(m1))
+```
+
+---
+# Independence of Irrelevant Alternatives (IIA)
+- IIA assumption states that the addition of a new category does not change the odds-ratios of the existing alternatives.
+- In other words, the alternatives need to be **"distinct and weighed independently in the eyes of each decision maker"**.
+
+---
+# Test IIA assumption
+- The Hausman-McFadden Test
+
+
+---
+# The Multinomial Probit Model

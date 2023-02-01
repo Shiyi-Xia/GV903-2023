@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Nominal Dependent Variables</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Winnie Xia" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Nominal Dependent Variables
+]
+.subtitle[
+## Week 19
+]
+.author[
+### Winnie Xia
+]
+
+---
+
+
+
+
+
+# Nominal Data in Political Science
+
+- If outcome or dependent variable is binary, then use **logit or probit models**.
+
+- If outcome or dependent variable is categorical but ordered (i.e low to high), then use **ordered logit or ordered probit models**
+ - Agree; Neutral; Disagree
+ - Low; Middle; High
+ 
+- If outcome or dependent variable is categorical without any particular order, then use **multinomial logit/probit models**.
+
+---
+# Models for Nominal DVs
+- Multinominal logit model: Series of binary logit models; similar to ordered logit. **Easiest to interpret**.
+- Multinominal probit model: Series of binary probit models; similar to ordered probit. **Drops the IIA assumption**.
+- Conditional logit model
+- Joint multinominal and conditional logit model
+- Mixed multinomial logit model
+- Nested multinomial logit model
+---
+# R packages for Nominal families 
+|  | nnet | mlogit | mnlogit | MNP |mclogit |
+|--------| --- | --- | --- | --- | --- |
+| Multinominal logit model | yes | yes | yes | no | yes |
+| Multinominal probit model | no | yes | no | yes | no |
+| Conditional logit model | no | yes| yes | no | yes |
+| Joint multinominal and conditional logit model | no | yes | no | no | yes |
+| Mixed multinomial logit model | no | yes | yes | no | no |
+| Mixed multinomial logit model | no | no | yes | no | no |
+
+---
+# Multinomial Logit Model in R
+
+
+```r
+library(foreign)
+library(texreg)
+library(carData)
+data(WVS)
+WVS$poverty &lt;- as.factor(as.character(WVS$poverty))
+```
+
+---
+# Multinomial Logit Model in R
+
+
+```r
+library(nnet)
+m1 &lt;- multinom(poverty ~ religion + degree + country + 
+                 age + gender, data = WVS)
+```
+
+```
+## # weights:  27 (16 variable)
+## initial  value 5911.632725 
+## iter  10 value 5275.968240
+## iter  20 value 5012.901598
+## final  value 5011.083370 
+## converged
+```
+---
+# Multinomial Logit Model in R
+
+
+```r
+screenreg(m1, single.row = TRUE, beside = TRUE)
+```
+
+```
+## 
+## ========================================================
+##                 Too Little           Too Much           
+## --------------------------------------------------------
+## (Intercept)         0.90 (0.12) ***     -1.38 (0.18) ***
+## religionyes         0.02 (0.09)          0.39 (0.12) ** 
+## degreeyes          -0.20 (0.08) **      -0.09 (0.12)    
+## countryNorway      -0.20 (0.08) *       -1.89 (0.19) ***
+## countrySweden       0.10 (0.09)         -2.01 (0.22) ***
+## countryUSA          0.04 (0.09)          0.92 (0.10) ***
+## age                -0.01 (0.00) ***      0.01 (0.00) ** 
+## gendermale         -0.20 (0.06) ***     -0.03 (0.09)    
+## --------------------------------------------------------
+## AIC             10054.17             10054.17           
+## BIC             10159.62             10159.62           
+## Log Likelihood  -5011.08             -5011.08           
+## Deviance        10022.17             10022.17           
+## Num. obs.        5381                 5381              
+## K                   3                    3              
+## ========================================================
+## *** p &lt; 0.001; ** p &lt; 0.01; * p &lt; 0.05
+```
+
+---
+# Multinomial Logit Interpretation
+- Again, we recommend, to use **predicted probabilities**.
+- Create a typical scenario and then plot them.
+
+---
+# Interpretation
+
+```r
+z &lt;- summary(m1)$coefficients/summary(m1)$standard.errors
+p &lt;- (1 - pnorm(abs(z), 0, 1))*2
+p
+```
+
+```
+##             (Intercept) religionyes  degreeyes countryNorway countrySweden
+## Too Little 8.060219e-14 0.811372690 0.00851349    0.01561193     0.2613375
+## Too Much   4.218847e-15 0.001949628 0.43389462    0.00000000     0.0000000
+##            countryUSA          age   gendermale
+## Too Little  0.6604443 3.420235e-06 0.0008083448
+## Too Much    0.0000000 3.128912e-03 0.7642403570
+```
+---
+# Interpretation
+
+```r
+exp(coef(m1))
+```
+
+```
+##            (Intercept) religionyes degreeyes countryNorway countrySweden
+## Too Little   2.4487806    1.021469 0.8195564     0.8190388     1.1032380
+## Too Much     0.2519639    1.471820 0.9126110     0.1503731     0.1334816
+##            countryUSA       age gendermale
+## Too Little   1.038602 0.9916051  0.8156605
+## Too Much     2.520609 1.0075592  0.9735717
+```
+
+---
+# Independence of Irrelevant Alternatives (IIA)
+- IIA assumption states that the addition of a new category does not change the odds-ratios of the existing alternatives.
+- In other words, the alternatives need to be **"distinct and weighed independently in the eyes of each decision maker"**.
+
+---
+# Test IIA assumption
+- The Hausman-McFadden Test
+
+
+---
+# The Multinomial Probit Model
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
