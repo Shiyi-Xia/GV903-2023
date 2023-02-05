@@ -23,7 +23,7 @@ style_solarized_light()
 
 ```{r setup, include=FALSE}
 options(htmltools.dir.version = FALSE)
-knitr::opts_chunk$set(fig.retina = 3, warning = FALSE, message = FALSE)
+knitr::opts_chunk$set(fig.retina = 3, warning = FALSE, message = FALSE, fig.align = 'center', out.width = "50%")
 ```
 
 # Nominal Data in Political Science
@@ -61,9 +61,8 @@ knitr::opts_chunk$set(fig.retina = 3, warning = FALSE, message = FALSE)
 ```{r}
 library(foreign)
 library(texreg)
-library(carData)
-data(WVS)
-WVS$poverty <- as.factor(as.character(WVS$poverty))
+dat <- read.dta("https://stats.idre.ucla.edu/stat/data/hsbdemo.dta")
+head(dat)
 ```
 
 ---
@@ -71,8 +70,11 @@ WVS$poverty <- as.factor(as.character(WVS$poverty))
 
 ```{r}
 library(nnet)
-m1 <- multinom(poverty ~ religion + degree + country + 
-                 age + gender, data = WVS)
+dat$prog2 <- relevel(dat$prog, ref = "academic")
+m1 <- multinom(prog2 ~ ses + write, data = dat)
+# prog, program type: general academic, and vocation
+# ses, social economic status, categorical
+# write, continuous, 
 ```
 ---
 # Multinomial Logit Model in R
@@ -88,19 +90,45 @@ screenreg(m1, single.row = TRUE, beside = TRUE)
 ```{r}
 z <- summary(m1)$coefficients/summary(m1)$standard.errors
 p <- (1 - pnorm(abs(z), 0, 1))*2
-data.frame(t(p))
+data.frame(p)
 ```
 ---
 # Interpretation
 ```{r}
-data.frame(t(exp(coef(m1))))
+data.frame(exp(coef(m1)))
 ```
-- All else being equal, every additional year of age decreases the relative odds of selecting **Too little** over **About Right** by approximately 1%, and increase the relative odds of **Too Much** over **About Right** by 0.7%.
+- All else being equal, a one unit increase in **writing** decreases the relative odds of being in **general program** over **academic program** by approximately 0.94 %, and decreases the relative odds of **vocational program** over **academic program** by 0.89 %.
 
 ---
 # Interpretation
 - Again, we recommend, to use **predicted probabilities**.
-- Create a typical scenario and then plot them.
+```{r}
+head(fitted(m1))
+```
+---
+# Interpretation
+- Then, we create a scenario to plot the predicted probabilities.
+```{r}
+library(reshape2)
+newdat <- data.frame(ses = rep(c("low", "middle", "high"), 
+                               each = 41),
+                     write = rep(c(30:70), 3))
+
+## store the predicted probabilities for each value of ses and write
+pre <- cbind(newdat, predict(m1, newdata = newdat, type = "probs", se = TRUE))
+## melt data set to long for ggplot2
+lpp <- melt(pre, id.vars = c("ses", "write"), value.name = "probability")
+```
+- Here, we are looking at the averaged predicted probabilities is to look at the averaged predicted probabilities for different values of the continuous predictor variable **write** within each level of **ses**.
+---
+# Plot 
+```{r }
+library(ggplot2)
+ggplot(lpp, aes(x = write, y = probability, colour = ses)) + 
+  geom_line() + facet_grid(variable ~ ., scales = "free") +
+  theme_minimal()
+```
+
 ---
 # Independence of Irrelevant Alternatives (IIA)
 - IIA assumption states that the addition of a new category does not change the odds-ratios of the existing alternatives.
@@ -110,9 +138,8 @@ data.frame(t(exp(coef(m1))))
 # Test IIA assumption
 - The Hausman-McFadden Test
 ```{r}
-
+library(mlogit)
+#mlogit::hmftest(prog2 ~ 0 | ses + write, data = dat,
+                #alt.subset = c("general",
+                               #"vocation"))
 ```
-
-
----
-# The Multinomial Probit Model
