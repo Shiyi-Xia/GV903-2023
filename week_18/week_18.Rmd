@@ -34,7 +34,7 @@ knitr::opts_chunk$set(fig.retina = 3, warning = FALSE, message = FALSE)
  - Agree; Neutral; Disagree
  - Low; Middle; High
  
-- If outcome or dependent variable is categorical without any particular order, then use **multinomial logit**.
+- If outcome or dependent variable is categorical without any particular order, then use **multinomial logit models**.
 
 ---
 # Ordered logit and probit in R

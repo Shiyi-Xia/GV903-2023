@@ -89,6 +89,8 @@ m1 &lt;- multinom(poverty ~ religion + degree + country +
 ---
 # Multinomial Logit Model in R
 
+**Coefficients are log odds-ratios of the respective category over the reference category.**
+
 
 ```r
 screenreg(m1, single.row = TRUE, beside = TRUE)
@@ -120,42 +122,48 @@ screenreg(m1, single.row = TRUE, beside = TRUE)
 
 ---
 # Multinomial Logit Interpretation
-- Again, we recommend, to use **predicted probabilities**.
-- Create a typical scenario and then plot them.
-
----
-# Interpretation
 
 ```r
 z &lt;- summary(m1)$coefficients/summary(m1)$standard.errors
 p &lt;- (1 - pnorm(abs(z), 0, 1))*2
-p
+data.frame(t(p))
 ```
 
 ```
-##             (Intercept) religionyes  degreeyes countryNorway countrySweden
-## Too Little 8.060219e-14 0.811372690 0.00851349    0.01561193     0.2613375
-## Too Much   4.218847e-15 0.001949628 0.43389462    0.00000000     0.0000000
-##            countryUSA          age   gendermale
-## Too Little  0.6604443 3.420235e-06 0.0008083448
-## Too Much    0.0000000 3.128912e-03 0.7642403570
+##                 Too.Little     Too.Much
+## (Intercept)   8.060219e-14 4.218847e-15
+## religionyes   8.113727e-01 1.949628e-03
+## degreeyes     8.513490e-03 4.338946e-01
+## countryNorway 1.561193e-02 0.000000e+00
+## countrySweden 2.613375e-01 0.000000e+00
+## countryUSA    6.604443e-01 0.000000e+00
+## age           3.420235e-06 3.128912e-03
+## gendermale    8.083448e-04 7.642404e-01
 ```
 ---
 # Interpretation
 
 ```r
-exp(coef(m1))
+data.frame(t(exp(coef(m1))))
 ```
 
 ```
-##            (Intercept) religionyes degreeyes countryNorway countrySweden
-## Too Little   2.4487806    1.021469 0.8195564     0.8190388     1.1032380
-## Too Much     0.2519639    1.471820 0.9126110     0.1503731     0.1334816
-##            countryUSA       age gendermale
-## Too Little   1.038602 0.9916051  0.8156605
-## Too Much     2.520609 1.0075592  0.9735717
+##               Too.Little  Too.Much
+## (Intercept)    2.4487806 0.2519639
+## religionyes    1.0214687 1.4718197
+## degreeyes      0.8195564 0.9126110
+## countryNorway  0.8190388 0.1503731
+## countrySweden  1.1032380 0.1334816
+## countryUSA     1.0386016 2.5206087
+## age            0.9916051 1.0075592
+## gendermale     0.8156605 0.9735717
 ```
+- All else being equal, every additional year of age decreases the relative odds of selecting **Too little** over **About Right** by approximately 1%, and increase the relative odds of **Too Much** over **About Right** by 0.7%.
 
+---
+# Interpretation
+- Again, we recommend, to use **predicted probabilities**.
+- Create a typical scenario and then plot them.
 ---
 # Independence of Irrelevant Alternatives (IIA)
 - IIA assumption states that the addition of a new category does not change the odds-ratios of the existing alternatives.
@@ -164,6 +172,7 @@ exp(coef(m1))
 ---
 # Test IIA assumption
 - The Hausman-McFadden Test
+
 
 
 ---
