@@ -1,0 +1,69 @@
+---
+title: "Limited Dependent Variables"
+subtitle: "Week 20"
+author: "Winnie Xia"
+output:
+  xaringan::moon_reader:
+    css: xaringan-themer.css
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+style_mono_accent(
+  header_font_google = google_font("Josefin Sans"),
+  text_font_google   = google_font("Montserrat", "300", "300i"),
+  code_font_google   = google_font("Fira Mono")
+)
+
+style_mono_dark(base_color = "#cbf7ed")
+```
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(fig.retina = 3, warning = FALSE, message = FALSE, fig.align = 'center', out.width = "50%")
+```
+# Limted Dependent Variable
+- What is a limited dependent variable?
+**Limited dependent variables** are dependent variables that have limited ranges, usually either **discontinuous** or **range bounded**.
+
+---
+# Censoring and Truncation
+- Censoring is when the limit observations are in the sample.
+- Truncation is when the observations are not in the sample.
+
+---
+# Truncated Regression
+
+---
+# Truncated Regression in R
+```{r}
+library(truncreg)
+```
+
+
+---
+# Tobit Model
+
+---
+# Tobit Model in R
+```{r}
+library(tidyverse)
+
+
+acad_apt = read_csv("https://stats.idre.ucla.edu/stat/data/tobit.csv") %>%
+  mutate(prog = factor(prog, labels = c('acad', 'general', 'vocational')))
+```
+
+
+---
+# Heckit Model
+
+---
+# Heckit Model in R
+
+
+
