@@ -14,17 +14,21 @@ output:
 ```{r xaringan-themer, include=FALSE, warning=FALSE}
 library(xaringanthemer)
 style_mono_accent(
+  base_color = "#1c5253",
   header_font_google = google_font("Josefin Sans"),
   text_font_google   = google_font("Montserrat", "300", "300i"),
   code_font_google   = google_font("Fira Mono")
 )
+# renderthis::to_pdf("slides.Rmd")
 
-style_mono_dark(base_color = "#cbf7ed")
 ```
 
 ```{r setup, include=FALSE}
 options(htmltools.dir.version = FALSE)
 knitr::opts_chunk$set(fig.retina = 3, warning = FALSE, message = FALSE, fig.align = 'center', out.width = "50%")
+library(foreign)
+library(tidyverse)
+library(texreg)
 ```
 # Limted Dependent Variable
 - What is a limited dependent variable?
@@ -37,33 +41,46 @@ knitr::opts_chunk$set(fig.retina = 3, warning = FALSE, message = FALSE, fig.alig
 
 ---
 # Truncated Regression
-
+- Truncated regression addresses the bias introduced when using OLS regression with truncated data.
 ---
 # Truncated Regression in R
 ```{r}
 library(truncreg)
+dat <- read.dta("https://stats.idre.ucla.edu/stat/data/truncreg.dta")
+ggplot(dat, aes(achiv, fill = prog)) +
+  geom_histogram(binwidth=3) +
+  theme_minimal()
 ```
-
-
+---
+# Truncated Regression in R
+```{r}
+m <- truncreg(achiv ~ langscore + prog, data = dat, 
+              point = 40, direction = "left")
+screenreg(m)
+```
 ---
 # Tobit Model
-
+The tobit model, also called a censored regression model, is designed to estimate linear relationships between variables when there is either left- or right-censoring in the dependent variable (also known as censoring from below and above, respectively).
 ---
 # Tobit Model in R
 ```{r}
-library(tidyverse)
-
-
+library(VGAM)
 acad_apt = read_csv("https://stats.idre.ucla.edu/stat/data/tobit.csv") %>%
   mutate(prog = factor(prog, labels = c('acad', 'general', 'vocational')))
 ```
 
-
+---
+# Tobit Model in R
+```{r}
+m2 <- vglm(apt ~ read + math + prog, tobit(Upper = 800), data = acad_apt)
+screenreg(m2)
+```
 ---
 # Heckit Model
-
+- Heckit model can be used when there is incidental truncation, i.e., there is variable that explains whether we have observations for an outcome variable.
+- **Example**:
+  - wage for those who have jobs, another variable that indicates whether someone has a job;
+  - grades for those who go to universities, another variable that indicates whether someone goes to university or not.
+- Two-Stage least squares, **a statistical technique that is used in the analysis of structural equations.**
 ---
 # Heckit Model in R
-
-
-
