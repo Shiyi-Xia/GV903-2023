@@ -91,7 +91,8 @@ The tobit model, also called a censored regression model, is designed to estimat
 ```r
 library(VGAM)
 acad_apt = read_csv("https://stats.idre.ucla.edu/stat/data/tobit.csv") %&gt;%
-  mutate(prog = factor(prog, labels = c('acad', 'general', 'vocational')))
+  mutate(prog = factor(prog, labels = c('acad', 
+                                        'general', 'vocational')))
 ```
 
 ---
@@ -133,8 +134,7 @@ screenreg(m2)
   - wage for those who have jobs, another variable that indicates whether someone has a job;
   - grades for those who go to universities, another variable that indicates whether someone goes to university or not.
 - Two-Stage least squares, **a statistical technique that is used in the analysis of structural equations.**
----
-# Heckit Model in R
+
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
